@@ -13,9 +13,8 @@
 {title:Syntax}
 
 {p 8 18 2}
-{cmd:ipwpath} {depvar} {help indepvars:mvars} {ifin}{cmd:,} dvar({varname}) mvar({varname}) 
-d({it:real}) dstar({it:real}) [cvars({varlist})
-{reps({it:integer}) strata({varname}) cluster({varname}) level(cilevel) seed({it:passthru}) sampwts({varname}) detail]
+{cmd:ipwpath} {depvar} {help indepvars:mvars} {ifin}{cmd:,} dvar({varname}) d({it:real}) dstar({it:real}) 
+[cvars({varlist}) {reps({it:integer}) strata({varname}) cluster({varname}) level(cilevel) seed({it:passthru}) sampwts({varname}) detail]
 
 {phang}{opt depvar} - this specifies the outcome variable.
 
