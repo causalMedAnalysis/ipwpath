@@ -1,0 +1,34 @@
+{smcl}
+{txt}{sf}{ul off}
+{.-}
+{s6hlp}
+package ^ipwpath^ from https://github.com/causalMedAnalysis/ipwpath
+{smcl}
+{.-}
+{s6hlp}
+
+{smcl}
+{hilite:TITLE}{p 6 8}'IPWPATH': module to estimate path-specific effects using inverse probability weighting{p_end}
+{s6hlp}
+
+^DESCRIPTION/AUTHOR(S)^
+      
+ipwpath estimates path-specific effects using inverse probability weighting. If there are K causally ordered mediators, 
+then K+1 models for the exposure, conditional on the baseline confounders and different sets of mediators, are estimated 
+to construct the weights.
+      
+Requires: Stata version 15
+      
+Distribution-Date: 20240827
+      
+Author: Geoff Wodtke, University of Chicago
+Support: email wodtke@@uchicago.edu
+      
+
+^INSTALLATION FILES^                              (type ^net install^ ^ipwpath^)
+      ipwpath.ado
+	  ipwpathbs.ado
+	  mipwpath.ado
+      ipwpath.sthlp
+
+{txt}{sf}{ul off}

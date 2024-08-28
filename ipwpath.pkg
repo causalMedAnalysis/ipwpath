@@ -1,0 +1,17 @@
+d 'IPWPATH': module to estimate path-specific effects using inverse probability weighting
+d
+d ipwpath estimates path-specific effects using inverse probability weighting. If there are K causally ordered mediators, 
+d then K+1 models for the exposure, conditional on the baseline confounders and different sets of mediators, are estimated 
+d to construct the weights.
+d      
+d Requires: Stata version 15
+d
+d Distribution-Date: 20240827
+d
+d Author: Geoff Wodtke, University of Chicago
+d Support: email wodtke@@uchicago.edu
+d
+f mipwpath.ado
+f ipwpathbs.ado
+f ipwpath.ado
+f ipwpath.sthlp
