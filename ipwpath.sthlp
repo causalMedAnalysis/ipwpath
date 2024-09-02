@@ -71,7 +71,6 @@ operating through each of the K mediators, net of the mediators that precede it 
 {pstd}Setup{p_end}
 {phang2}{cmd:. use nlsy79.dta} {p_end}
 
- 
 {pstd} percentile bootstrap CIs with default settings and K=2 causally ordered mediators: {p_end}
  
 {phang2}{cmd:. ipwpath std_cesd_age40 ever_unemp_age3539 log_faminc_adj_age3539, dvar(att22) cvars(female black hispan paredu parprof parinc_prank famsize afqt3) d(1) dstar(0) reps(1000)} {p_end}
@@ -79,6 +78,7 @@ operating through each of the K mediators, net of the mediators that precede it 
 {pstd} percentile bootstrap CIs with default settings and K=3 causally ordered mediators: {p_end}
  
 {phang2}{cmd:. ipwpath std_cesd_age40 cesd_1992 ever_unemp_age3539 log_faminc_adj_age3539, dvar(att22) cvars(female black hispan paredu parprof parinc_prank famsize afqt3) d(1) dstar(0) reps(1000)} {p_end}
+
 {title:Saved results}
 
 {pstd}{cmd:ipwpath} saves the following results in {cmd:e()}:
