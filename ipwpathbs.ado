@@ -13,14 +13,15 @@ program define ipwpathbs, rclass
 		d(real) ///
 		dstar(real) ///
 		[cvars(varlist numeric)] ///
-		[sampwts(varname numeric)] /*[detail]*/ 
+		[sampwts(varname numeric)] ///
+		[censor(numlist min=2 max=2)] 
 		
 	qui {
 		marksample touse
 		count if `touse'
 		if r(N) == 0 error 2000
 		local N = r(N)
-		}
+	}
 			
 	gettoken yvar mvars : varlist
 	
@@ -30,31 +31,31 @@ program define ipwpathbs, rclass
 	foreach v of local mvars {
 		local mvar`i' `v'
 		local ++i
-		}
+	}
 	
 	if (`num_mvars' == 1) {
 	
 		mipwpath `yvar' `mvars' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 	
 		return scalar nde=r(mnde)
 		return scalar nie=r(mnie)
 		return scalar ate=r(ate)
 	
-		}
+	}
 
 	if (`num_mvars' == 2) {
 	
 		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 	
 		scalar mnde_M1M2=r(mnde)
 
 		mipwpath `yvar' `mvar1' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1=r(mnde)
 		
@@ -63,25 +64,25 @@ program define ipwpathbs, rclass
 		return scalar pse_DM1Y=r(mnie)
 		return scalar ate=r(ate)
 		
-		}
+	}
 
 	if (`num_mvars' == 3) {
 	
 		mipwpath `yvar' `mvar1' `mvar2' `mvar3' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 	
 		scalar mnde_M1M2M3=r(mnde)
 
 		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1M2=r(mnde)
 		
 		mipwpath `yvar' `mvar1' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1=r(mnde)
 		
@@ -91,31 +92,31 @@ program define ipwpathbs, rclass
 		return scalar pse_DM1Y=r(mnie)
 		return scalar ate=r(ate)
 		
-		}
+	}
 
 	if (`num_mvars' == 4) {
 	
 		mipwpath `yvar' `mvar1' `mvar2' `mvar3' `mvar4' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 	
 		scalar mnde_M1M2M3M4=r(mnde)
 
 		mipwpath `yvar' `mvar1' `mvar2' `mvar3' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1M2M3=r(mnde)
 		
 		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1M2=r(mnde)
 		
 		mipwpath `yvar' `mvar1' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1=r(mnde)
 		
@@ -126,37 +127,37 @@ program define ipwpathbs, rclass
 		return scalar pse_DM1Y=r(mnie)
 		return scalar ate=r(ate)
 		
-		}
+	}
 	
 	if (`num_mvars' == 5) {
 
 		mipwpath `yvar' `mvar1' `mvar2' `mvar3' `mvar4' `mvar5' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 	
 		scalar mnde_M1M2M3M4M5=r(mnde)
 
 		mipwpath `yvar' `mvar1' `mvar2' `mvar3' `mvar4' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 	
 		scalar mnde_M1M2M3M4=r(mnde)
 
 		mipwpath `yvar' `mvar1' `mvar2' `mvar3' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1M2M3=r(mnde)
 		
 		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1M2=r(mnde)
 		
 		mipwpath `yvar' `mvar1' if `touse', ///
 			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts')
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
 		
 		scalar mnde_M1=r(mnde)
 		

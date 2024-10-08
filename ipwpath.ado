@@ -13,15 +13,10 @@ program define ipwpath, eclass
 		dvar(varname numeric) ///
 		d(real) ///
 		dstar(real) ///
-		[cvars(varlist numeric)] ///
-		[sampwts(varname numeric)] ///
-		[reps(integer 200)] ///
-		[strata(varname numeric)] ///
-		[cluster(varname numeric)] ///
-		[level(cilevel)] ///
-		[seed(passthru)] ///
-		[saving(string)] ///
-		[detail]
+		[cvars(varlist numeric) ///
+		sampwts(varname numeric) ///
+		censor(numlist min=2 max=2) ///
+		detail * ]
 		
 	qui {
 		marksample touse
@@ -52,6 +47,26 @@ program define ipwpath, eclass
 			error 198
 		}
 	}
+
+	if ("`censor'" != "") {
+		local censor1: word 1 of `censor'
+		local censor2: word 2 of `censor'
+
+		if (`censor1' >= `censor2') {
+			di as error "The first number in the censor() option must be less than the second."
+			error 198
+		}
+
+		if (`censor1' < 1 | `censor1' > 49) {
+			di as error "The first number in the censor() option must be between 1 and 49."
+			error 198
+		}
+
+		if (`censor2' < 51 | `censor2' > 99) {
+			di as error "The second number in the censor() option must be between 51 and 99."
+			error 198
+		}
+	}
 	
 	if ("`sampwts'" == "") {
 		tempvar sampwts
@@ -66,26 +81,15 @@ program define ipwpath, eclass
 			logit `dvar' `mvar1' `cvars' [pw=`sampwts'] if `touse'
 		}
 
-		if ("`saving'" != "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				NDE=r(nde) ///
-				NIE=r(nie), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					saving(`saving', replace) ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
+		bootstrap ///
+			ATE=r(ate) ///
+			NDE=r(nde) ///
+			NIE=r(nie), ///
+				`options' noheader notable: ///
+					ipwpathbs `yvar' `mvars' if `touse', ///
+						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
+						sampwts(`sampwts') censor(`censor')
 	
-		if ("`saving'" == "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				NDE=r(nde) ///
-				NIE=r(nie), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
 	}
 		
 	if (`num_mvars' == 2) {
@@ -96,30 +100,17 @@ program define ipwpath, eclass
 			logit `dvar' `mvar1' `mvar2' `cvars' [pw=`sampwts'] if `touse'
 		}
 		
-		if ("`saving'" != "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					saving(`saving', replace) ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
-	
-		if ("`saving'" == "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
+		bootstrap ///
+			ATE=r(ate) ///
+			PSE_DY=r(pse_DY) ///
+			PSE_DM2Y=r(pse_DM2Y) ///
+			PSE_DM1Y=r(pse_DM1Y), ///
+				`options' noheader notable: ///
+					ipwpathbs `yvar' `mvars' if `touse', ///
+						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
+						sampwts(`sampwts') censor(`censor') 
 	}
-
+	
 	if (`num_mvars' == 3) {
 
 		if ("`detail'" != "") {
@@ -129,30 +120,16 @@ program define ipwpath, eclass
 			logit `dvar' `mvar1' `mvar2' `mvar3' `cvars' [pw=`sampwts'] if `touse'
 		}
 		
-		if ("`saving'" != "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM3Y=r(pse_DM3Y) ///				
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					saving(`saving', replace) ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
-	
-		if ("`saving'" == "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM3Y=r(pse_DM3Y) ///				
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
+		bootstrap ///
+			ATE=r(ate) ///
+			PSE_DY=r(pse_DY) ///
+			PSE_DM3Y=r(pse_DM3Y) ///				
+			PSE_DM2Y=r(pse_DM2Y) ///
+			PSE_DM1Y=r(pse_DM1Y), ///
+				`options' noheader notable: ///
+					ipwpathbs `yvar' `mvars' if `touse', ///
+						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
+						sampwts(`sampwts') censor(`censor') 
 	}
 
 	if (`num_mvars' == 4) {
@@ -165,32 +142,17 @@ program define ipwpath, eclass
 			logit `dvar' `mvar1' `mvar2' `mvar3' `mvar4' `cvars' [pw=`sampwts'] if `touse'
 		}
 		
-		if ("`saving'" != "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM4Y=r(pse_DM4Y) ///				
-				PSE_DM3Y=r(pse_DM3Y) ///
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					saving(`saving', replace) ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
-	
-		if ("`saving'" == "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM4Y=r(pse_DM4Y) ///								
-				PSE_DM3Y=r(pse_DM3Y) ///				
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
+		bootstrap ///
+			ATE=r(ate) ///
+			PSE_DY=r(pse_DY) ///
+			PSE_DM4Y=r(pse_DM4Y) ///				
+			PSE_DM3Y=r(pse_DM3Y) ///
+			PSE_DM2Y=r(pse_DM2Y) ///
+			PSE_DM1Y=r(pse_DM1Y), ///
+				`options' noheader notable: ///
+					ipwpathbs `yvar' `mvars' if `touse', ///
+						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
+						sampwts(`sampwts') censor(`censor') 
 	}
 
 	if (`num_mvars' == 5) {
@@ -204,34 +166,18 @@ program define ipwpath, eclass
 			logit `dvar' `mvar1' `mvar2' `mvar3' `mvar4' `mvar5' `cvars' [pw=`sampwts'] if `touse'
 		}
 		
-		if ("`saving'" != "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM5Y=r(pse_DM5Y) ///				
-				PSE_DM4Y=r(pse_DM4Y) ///				
-				PSE_DM3Y=r(pse_DM3Y) ///
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					saving(`saving', replace) ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
-	
-		if ("`saving'" == "") {
-			bootstrap ///
-				ATE=r(ate) ///
-				PSE_DY=r(pse_DY) ///
-				PSE_DM5Y=r(pse_DM5Y) ///		
-				PSE_DM4Y=r(pse_DM4Y) ///								
-				PSE_DM3Y=r(pse_DM3Y) ///				
-				PSE_DM2Y=r(pse_DM2Y) ///
-				PSE_DM1Y=r(pse_DM1Y), ///
-					reps(`reps') strata(`strata') cluster(`cluster') level(`level') `seed' ///
-					noheader notable: ipwpathbs `yvar' `mvars' if `touse', ///
-					dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') sampwts(`sampwts')
-		}
+		bootstrap ///
+			ATE=r(ate) ///
+			PSE_DY=r(pse_DY) ///
+			PSE_DM5Y=r(pse_DM5Y) ///				
+			PSE_DM4Y=r(pse_DM4Y) ///				
+			PSE_DM3Y=r(pse_DM3Y) ///
+			PSE_DM2Y=r(pse_DM2Y) ///
+			PSE_DM1Y=r(pse_DM1Y), ///
+				`options' noheader notable: ///
+					ipwpathbs `yvar' `mvars' if `touse', ///
+						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
+						sampwts(`sampwts') censor(`censor') 
 	}
 	
 	estat bootstrap, p noheader

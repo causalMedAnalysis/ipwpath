@@ -13,15 +13,15 @@ program define mipwpath, rclass
 		d(real) ///
 		dstar(real) ///
 		[cvars(varlist numeric)] ///
-		[sampwts(varname numeric)] /*[detail]*/ 
-		
+		[sampwts(varname numeric)] ///
+		[censor(numlist min=2 max=2)] 
 	
 	qui {
 		marksample touse
 		count if `touse'
 		if r(N) == 0 error 2000
 		local N = r(N)
-		}
+	}
 			
 	gettoken yvar mvars : varlist
 
@@ -32,7 +32,7 @@ program define mipwpath, rclass
 		qui replace `wts' = `wts' * `sampwts'
 		qui sum `wts'
 		qui replace `wts' = `wts' / r(mean)
-		}
+	}
 		
 	logit `dvar' `cvars' [pw=`wts'] if `touse'
 	tempvar phat_D1_C phat_D0_C
@@ -54,34 +54,18 @@ program define mipwpath, rclass
 	qui gen `sw2' = `phat_D`d'' / `phat_D`d'_C' if `dvar'==`d' & `touse'
 	qui gen `sw3' = (`phat_D`dstar'_CM'*`phat_D`d'') / (`phat_D`d'_CM'*`phat_D`dstar'_C') if `dvar'==`d' & `touse'
 		
+	if ("`censor'"!="") {
+		foreach i of var `sw1' `sw2' `sw3' {
+			qui centile `i' if `i'!=. & `touse', c(`censor') 
+			qui replace `i'=r(c_1) if `i'<r(c_1) & `i'!=. & `touse'
+			qui replace `i'=r(c_2) if `i'>r(c_2) & `i'!=. & `touse'
+		}
+	}
+	
 	foreach i of var `sw1' `sw2' `sw3' {
-		qui centile `i' if `i'!=. & `touse', c(1 99) 
-		qui replace `i'=r(c_1) if `i'<r(c_1) & `i'!=. & `touse'
-		qui replace `i'=r(c_2) if `i'>r(c_2) & `i'!=. & `touse'
 		qui replace `i'=`i' * `wts' if `touse'
-		}
-
-/*	
-	if ("`detail'"!="") {
-	
-		local ipw_var_names "sw1_r001_temp sw2_r001_temp sw3_r001_temp"
-		foreach name of local ipw_var_names {
-			capture confirm new variable `name'
-			if _rc {
-				display as error "{p 0 0 5 0}The command needs to create weight variables"
-				display as error "with the following names: `ipw_var_names', "
-				display as error "but these variables have already been defined.{p_end}"
-				error 110
-				}
-			}
-		
-		qui gen sw1_r001_temp = `sw1'
-		qui gen sw2_r001_temp = `sw2'
-		qui gen sw3_r001_temp = `sw3'
-	
-		}
-*/
-
+	}
+			
 	preserve
 	
 	qui reg `yvar' [pw=`sw1'] if `dvar'==`dstar' & `touse'

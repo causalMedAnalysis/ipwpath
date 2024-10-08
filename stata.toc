@@ -2,31 +2,31 @@
 {txt}{sf}{ul off}
 {.-}
 {s6hlp}
-package ^linpath^ from https://github.com/causalMedAnalysis/linpath
+package ^ipwpath^ from https://github.com/causalMedAnalysis/ipwpath
 {smcl}
 {.-}
 {s6hlp}
 
 {smcl}
-{hilite:TITLE}{p 6 8}'LINPATH': module to estimate path-specific effects using linear models{p_end}
+{hilite:TITLE}{p 6 8}'IPWPATH': module to estimate path-specific effects using inverse probability weighting{p_end}
 {s6hlp}
 
 ^DESCRIPTION/AUTHOR(S)^
       
-linpath estimates path-specific effects using linear models.
+ipwpath estimates path-specific effects using inverse probability weighting. 
       
 Requires: Stata version 15
       
-Distribution-Date: 20240710
+Distribution-Date: 20240827
       
 Author: Geoff Wodtke, University of Chicago
 Support: email wodtke@@uchicago.edu
       
 
-^INSTALLATION FILES^                              (type ^net install^ ^linpath^)
-      linpath.ado
-	  linpathbs.ado
-	  mlinpath.ado
-      linpath.sthlp
+^INSTALLATION FILES^                              (type ^net install^ ^ipwpath^)
+      ipwpath.ado
+	  ipwpathbs.ado
+	  mipwpath.ado
+      ipwpath.sthlp
 
 {txt}{sf}{ul off}
