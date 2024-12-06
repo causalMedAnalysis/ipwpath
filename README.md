@@ -11,7 +11,7 @@ ipwpath depvar mvars, dvar(varname) d(real) dstar(real) [options]
 ### Required Arguments
 
 - `depvar`: Specifies the outcome variable.
-- `mvars`: Specifies the mediators, arranged in causal order from the first to the last in the hypothesized causal sequence. Up to 5 causally ordered mediators are permitted.
+- `mvars`: Specifies the mediators, arranged in causal order from the first to the last in the hypothesized causal sequence. 
 - `dvar(varname)`: Specifies the treatment (exposure) variable. This variable must be binary (0/1).
 - `d(real)`: Reference level of treatment.
 - `dstar(real)`: Alternative level of treatment, defining the treatment contrast of interest.
