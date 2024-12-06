@@ -26,7 +26,7 @@
 {phang}{opt depvar} - this specifies the outcome variable.
 
 {phang}{opt mvars} - this specifies the mediators in causal order, beggining with the first in the hypothesized causal sequence
-and ending with the last. Up to 5 causally ordered mediators are permitted.
+and ending with the last. 
 
 {phang}{opt dvar(varname)} - this specifies the treatment (exposure) variable. This variable must be binary (0/1).
 

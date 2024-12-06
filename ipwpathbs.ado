@@ -27,148 +27,46 @@ program define ipwpathbs, rclass
 	
 	local num_mvars = wordcount("`mvars'")
 	
-	local i = 1
-	foreach v of local mvars {
-		local mvar`i' `v'
-		local ++i
-	}
-	
-	if (`num_mvars' == 1) {
-	
-		mipwpath `yvar' `mvars' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-	
-		return scalar nde=r(mnde)
-		return scalar nie=r(mnie)
-		return scalar ate=r(ate)
-	
-	}
-
-	if (`num_mvars' == 2) {
-	
-		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-	
-		scalar mnde_M1M2=r(mnde)
-
-		mipwpath `yvar' `mvar1' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
+	* loop over mediators in reverse order
+	forv k=`num_mvars'(-1)1 {
 		
-		scalar mnde_M1=r(mnde)
-		
-		return scalar pse_DY=mnde_M1M2
-		return scalar pse_DM2Y=mnde_M1-mnde_M1M2
-		return scalar pse_DM1Y=r(mnie)
-		return scalar ate=r(ate)
-		
-	}
-
-	if (`num_mvars' == 3) {
-	
-		mipwpath `yvar' `mvar1' `mvar2' `mvar3' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-	
-		scalar mnde_M1M2M3=r(mnde)
-
-		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1M2=r(mnde)
-		
-		mipwpath `yvar' `mvar1' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1=r(mnde)
-		
-		return scalar pse_DY=mnde_M1M2M3
-		return scalar pse_DM3Y=mnde_M1M2-mnde_M1M2M3
-		return scalar pse_DM2Y=mnde_M1-mnde_M1M2
-		return scalar pse_DM1Y=r(mnie)
-		return scalar ate=r(ate)
-		
-	}
-
-	if (`num_mvars' == 4) {
-	
-		mipwpath `yvar' `mvar1' `mvar2' `mvar3' `mvar4' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-	
-		scalar mnde_M1M2M3M4=r(mnde)
-
-		mipwpath `yvar' `mvar1' `mvar2' `mvar3' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1M2M3=r(mnde)
-		
-		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1M2=r(mnde)
-		
-		mipwpath `yvar' `mvar1' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1=r(mnde)
-		
-		return scalar pse_DY=mnde_M1M2M3M4
-		return scalar pse_DM4Y=mnde_M1M2M3-mnde_M1M2M3M4
-		return scalar pse_DM3Y=mnde_M1M2-mnde_M1M2M3
-		return scalar pse_DM2Y=mnde_M1-mnde_M1M2
-		return scalar pse_DM1Y=r(mnie)
-		return scalar ate=r(ate)
-		
-	}
-	
-	if (`num_mvars' == 5) {
-
-		mipwpath `yvar' `mvar1' `mvar2' `mvar3' `mvar4' `mvar5' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-	
-		scalar mnde_M1M2M3M4M5=r(mnde)
-
-		mipwpath `yvar' `mvar1' `mvar2' `mvar3' `mvar4' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-	
-		scalar mnde_M1M2M3M4=r(mnde)
-
-		mipwpath `yvar' `mvar1' `mvar2' `mvar3' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1M2M3=r(mnde)
-		
-		mipwpath `yvar' `mvar1' `mvar2' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1M2=r(mnde)
-		
-		mipwpath `yvar' `mvar1' if `touse', ///
-			dvar(`dvar') cvars(`cvars') ///
-			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
-		
-		scalar mnde_M1=r(mnde)
-		
-		return scalar pse_DY=mnde_M1M2M3M4M5
-		return scalar pse_DM5Y=mnde_M1M2M3M4-mnde_M1M2M3M4M5
-		return scalar pse_DM4Y=mnde_M1M2M3-mnde_M1M2M3M4
-		return scalar pse_DM3Y=mnde_M1M2-mnde_M1M2M3
-		return scalar pse_DM2Y=mnde_M1-mnde_M1M2
-		return scalar pse_DM1Y=r(mnie)
-		return scalar ate=r(ate)
-		
+		* select all mediators up to the mediator in question
+		local mvars_include
+		forv j=1/`k' {
+			local mvars_include `mvars_include' `=word("`mvars'",`j')'
 		}
+		
+		* estimate natural effects
+		mipwpath `yvar' `mvars_include' if `touse', ///
+			dvar(`dvar') cvars(`cvars') ///
+			d(`d') dstar(`dstar') sampwts(`sampwts') censor(`censor')
+		
+		* special case: only one total mediator
+		if `num_mvars'==1 {
+			return scalar nde = r(mnde)
+			return scalar nie = r(mnie)
+			return scalar ate = r(ate)
+		}
+		
+		* 2+ total mediators: last mediator
+		if `num_mvars'>1 & `k'==`num_mvars' {
+			return scalar pse_DY = r(mnde)
+			scalar prev_mnde = r(mnde)
+		}
+		
+		* 2+ total mediators: first mediator
+		if `num_mvars'>1 & `k'==1 {
+			return scalar pse_DM`=`k'+1'Y = r(mnde) - prev_mnde
+			return scalar pse_DM1Y = r(mnie)
+			return scalar ate = r(ate)
+		}
+		
+		* 2+ total mediators: all other mediators
+		if `num_mvars'>1 & !inlist(`k',1,`num_mvars') {
+			return scalar pse_DM`=`k'+1'Y = r(mnde) - prev_mnde
+			scalar prev_mnde = r(mnde)
+		}
+			
+	}
 
 end ipwpathbs

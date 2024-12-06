@@ -28,17 +28,6 @@ program define ipwpath, eclass
 	
 	local num_mvars = wordcount("`mvars'")
 
-	if (`num_mvars' > 5) {
-		display as error "ipwpath only supports a maximum of 5 mvars"
-		error 198
-	}
-	
-	local i = 1
-	foreach v of local mvars {
-		local mvar`i' `v'
-		local ++i
-	}
-
 	foreach i in `dvar' {
 		confirm variable `i'
 		qui levelsof `i', local(levels)
@@ -71,114 +60,31 @@ program define ipwpath, eclass
 	if ("`sampwts'" == "") {
 		tempvar sampwts
 		qui gen `sampwts' = 1 if `touse'
-		}
+	}
 		
 	/***COMPUTE POINT AND INTERVAL ESTIMATES***/
-	if (`num_mvars' == 1) {
-	
-		if ("`detail'" != "") {
-			logit `dvar' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `cvars' [pw=`sampwts'] if `touse'
+	if ("`detail'" != "") {
+		logit `dvar' `cvars' [pw=`sampwts'] if `touse'
+		local mvars_include
+		forv i=1/`num_mvars' {
+			local mvars_include `mvars_include' `=word("`mvars'",`i')'
+			logit `dvar' `mvars_include' `cvars' [pw=`sampwts'] if `touse'
 		}
-
-		bootstrap ///
-			ATE=r(ate) ///
-			NDE=r(nde) ///
-			NIE=r(nie), ///
-				`options' noheader notable: ///
-					ipwpathbs `yvar' `mvars' if `touse', ///
-						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
-						sampwts(`sampwts') censor(`censor')
-	
-	}
-		
-	if (`num_mvars' == 2) {
-
-		if ("`detail'" != "") {
-			logit `dvar' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `cvars' [pw=`sampwts'] if `touse'
-		}
-		
-		bootstrap ///
-			ATE=r(ate) ///
-			PSE_DY=r(pse_DY) ///
-			PSE_DM2Y=r(pse_DM2Y) ///
-			PSE_DM1Y=r(pse_DM1Y), ///
-				`options' noheader notable: ///
-					ipwpathbs `yvar' `mvars' if `touse', ///
-						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
-						sampwts(`sampwts') censor(`censor') 
 	}
 	
-	if (`num_mvars' == 3) {
-
-		if ("`detail'" != "") {
-			logit `dvar' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `mvar3' `cvars' [pw=`sampwts'] if `touse'
+	local effects ATE = r(ate)
+	if (`num_mvars' == 1) local effects `effects' NDE = r(nde) NIE = r(nie)
+	if (`num_mvars' > 1) {
+		local effects `effects' PSE_DY = r(pse_DY)
+		forv k=`num_mvars'(-1)1 {
+			local effects `effects' PSE_DM`k'Y = r(pse_DM`k'Y)
 		}
-		
-		bootstrap ///
-			ATE=r(ate) ///
-			PSE_DY=r(pse_DY) ///
-			PSE_DM3Y=r(pse_DM3Y) ///				
-			PSE_DM2Y=r(pse_DM2Y) ///
-			PSE_DM1Y=r(pse_DM1Y), ///
-				`options' noheader notable: ///
-					ipwpathbs `yvar' `mvars' if `touse', ///
-						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
-						sampwts(`sampwts') censor(`censor') 
 	}
-
-	if (`num_mvars' == 4) {
-
-		if ("`detail'" != "") {
-			logit `dvar' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `mvar3' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `mvar3' `mvar4' `cvars' [pw=`sampwts'] if `touse'
-		}
-		
-		bootstrap ///
-			ATE=r(ate) ///
-			PSE_DY=r(pse_DY) ///
-			PSE_DM4Y=r(pse_DM4Y) ///				
-			PSE_DM3Y=r(pse_DM3Y) ///
-			PSE_DM2Y=r(pse_DM2Y) ///
-			PSE_DM1Y=r(pse_DM1Y), ///
-				`options' noheader notable: ///
-					ipwpathbs `yvar' `mvars' if `touse', ///
-						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
-						sampwts(`sampwts') censor(`censor') 
-	}
-
-	if (`num_mvars' == 5) {
-
-		if ("`detail'" != "") {
-			logit `dvar' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `mvar3' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `mvar3' `mvar4' `cvars' [pw=`sampwts'] if `touse'
-			logit `dvar' `mvar1' `mvar2' `mvar3' `mvar4' `mvar5' `cvars' [pw=`sampwts'] if `touse'
-		}
-		
-		bootstrap ///
-			ATE=r(ate) ///
-			PSE_DY=r(pse_DY) ///
-			PSE_DM5Y=r(pse_DM5Y) ///				
-			PSE_DM4Y=r(pse_DM4Y) ///				
-			PSE_DM3Y=r(pse_DM3Y) ///
-			PSE_DM2Y=r(pse_DM2Y) ///
-			PSE_DM1Y=r(pse_DM1Y), ///
-				`options' noheader notable: ///
-					ipwpathbs `yvar' `mvars' if `touse', ///
-						dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
-						sampwts(`sampwts') censor(`censor') 
-	}
+	
+	bootstrap `effects', `options' noheader notable: ///
+		ipwpathbs `yvar' `mvars' if `touse', ///
+			dvar(`dvar') cvars(`cvars') d(`d') dstar(`dstar') ///
+			sampwts(`sampwts') censor(`censor')
 	
 	estat bootstrap, p noheader
 	
